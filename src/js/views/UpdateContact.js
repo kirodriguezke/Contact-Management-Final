@@ -1,15 +1,28 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useEffect, useContext } from "react";
+import { useParams } from "react-router-dom";
 import { Link } from "react-router-dom";
 
 import { Context } from "../store/appContext.js";
 
-export function AddContact() {
-	const { store, actions } = useContext(Context); // SE DEFINE COMO OBJETO
+export function UpdateContact() {
+	const params = useParams();
 
-	const [fullName, setFullName] = useState(""); // SE DEFINE COMO DOS VARIABLES
-	const [phone, setPhone] = useState("");
-	const [email, setEmail] = useState("");
-	const [address, setAddress] = useState("");
+	const { store, actions } = useContext(Context);
+
+	// let updateUser = actions.getContact(params.id);
+
+	const [fullName, setFullName] = useState(store.contacto.full_name);
+	const [phone, setPhone] = useState(store.contacto.phone);
+	const [email, setEmail] = useState(store.contacto.email);
+	const [address, setAddress] = useState(store.contacto.address);
+
+	useEffect(() => {
+		console.log(params);
+		actions.getContact(params.id);
+		console.log("UpdateContact.js", store.contacto);
+
+		//setFullName(store.contacto.full_name);
+	}, []);
 
 	function NewEmail(event) {
 		setEmail(event.target.value);
@@ -24,9 +37,11 @@ export function AddContact() {
 			agenda_slug: store.usuario
 		};
 
-		actions.createContact(newContact);
-		// actions.listContacts(newContact.agenda_slug);
-		alert("new contact created successfully");
+		// console.log("update contact", newContact);
+
+		actions.updateContact(params.id, newContact);
+
+		alert("Contact successfully updated");
 		setFullName("");
 		setPhone("");
 		setEmail("");
@@ -36,7 +51,7 @@ export function AddContact() {
 	return (
 		<div className="container">
 			<div>
-				<h1 className="text-center mt-5">Add a new contact</h1>
+				<h1 className="text-center mt-5">Update a new contact</h1>
 				<form>
 					<div className="form-group">
 						<label>Full Name</label>
@@ -78,11 +93,9 @@ export function AddContact() {
 							value={address}
 						/>
 					</div>
-					<Link to="/">
-						<button type="button" className="btn btn-primary form-control" onClick={SaveContact}>
-							save
-						</button>
-					</Link>
+					<button type="button" className="btn btn-primary form-control" onClick={SaveContact}>
+						save
+					</button>
 					<Link className="mt-3 w-100 text-center" to="/">
 						or get back to contacts
 					</Link>
