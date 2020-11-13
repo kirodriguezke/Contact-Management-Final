@@ -7,7 +7,7 @@ import { Context } from "../store/appContext.js";
 
 export const ContactCard = props => {
 	const [state, setState] = useState({
-		//initialize state here
+		
 	});
 
 	const { store, actions } = useContext(Context);
@@ -21,7 +21,7 @@ export const ContactCard = props => {
 				<div className="col-12 col-sm-6 col-md-9 text-center text-sm-left">
 					<div className=" float-right">
 						<Link to={"/edit/" + props.contactId}>
-							<button className="btn" onClick={event => actions.getContact(props.contactId)}>
+							<button className="btn">
 								<i className="fas fa-pencil-alt mr-3" />
 							</button>
 						</Link>
@@ -62,12 +62,9 @@ export const ContactCard = props => {
 	);
 };
 
-/**
- * Define the data-types for
- * your component's properties
- **/
+
 ContactCard.propTypes = {
-	// BUSCAR INFORMACION SOBRE LA DEFINICION DE LAS PROPIEDADES PROPS
+	
 	history: PropTypes.object,
 	onDelete: PropTypes.func,
 	contactName: PropTypes.string,
@@ -77,10 +74,6 @@ ContactCard.propTypes = {
 	contactId: PropTypes.string
 };
 
-/**
- * Define the default values for
- * your component's properties
- **/
 ContactCard.defaultProps = {
 	onDelete: null
 };
