@@ -1,48 +1,58 @@
-import React, { useState, useEffect, useContext } from "react";
-import { useParams } from "react-router-dom";
-import { Link } from "react-router-dom";
+import React, { useContext, useEffect, useState } from "react";
+import { Link, useParams } from "react-router-dom";
 
 import { Context } from "../store/appContext.js";
 
-export function UpdateContact() {
+export const UpdateContact = () => {
+	const { actions, store } = useContext(Context);
 	const params = useParams();
 
-	const { store, actions } = useContext(Context);
+	//DEFINO CADA CLAVE COMO VARIABLE CON ESTADO
 
-	// let updateUser = actions.getContact(params.id);
-
-	const [fullName, setFullName] = useState(store.contacto.full_name);
-	const [phone, setPhone] = useState(store.contacto.phone);
-	const [email, setEmail] = useState(store.contacto.email);
-	const [address, setAddress] = useState(store.contacto.address);
+	const [name, setName] = useState("");
+	const [phone, setPhone] = useState("");
+	const [email, setEmail] = useState("");
+	const [address, setAddress] = useState("");
 
 	useEffect(() => {
-		console.log(params);
-		actions.getContact(params.id);
-		console.log("UpdateContact.js", store.contacto);
-
-		//setFullName(store.contacto.full_name);
+		if (params.id) {
+			// PARA MEZCLAR EL UPDATECONTACT.JS CON EL ADDCONTACT.JS
+			actions.getContact(params.id);
+		}
+		console.log("store.user.id: ", store.user.id);
+		console.log("params desde Update: ", params);
 	}, []);
 
-	function NewEmail(event) {
-		setEmail(event.target.value);
-	}
+	useEffect(() => {
+		if (params.id == store.user.id) {
+			setName(store.user.full_name);
+			setPhone(store.user.phone);
+			setEmail(store.user.email);
+			setAddress(store.user.address);
+		}
+	}, [store.user]);
 
-	const SaveContact = e => {
+	//ONCHANGE CON CADA IMPUT PARA SETEAR VALOR CON SETX()
+
+	const handleChangeName = event => setName(event.target.value);
+	const handleChangePhone = event => setPhone(event.target.value);
+	const handleChangeEmail = event => setEmail(event.target.value);
+	const handleChangeAddress = event => setAddress(event.target.value);
+
+	// CONSTRUYO UN HANDLE PARA GUARDAR CONTACTO al escribir LOS IMPUT
+	const handleSaveContact = event => {
 		const newContact = {
-			full_name: fullName,
+			full_name: name,
+			address: address,
 			phone: phone,
 			email: email,
-			address: address,
-			agenda_slug: store.usuario
+			agenda_slug: store.agenda_slug
 		};
 
-		// console.log("update contact", newContact);
+		actions.updateContact(params.id, newContact); // SE USA PARAMS PARA INDICAR EL CONTACTO QUE ESTAMOS MODIFICANDO
 
-		actions.updateContact(params.id, newContact);
-
-		alert("Contact successfully updated");
-		setFullName("");
+		alert("Tu contacto " + name + " ha sido editado");
+		setName("");
 		setPhone("");
 		setEmail("");
 		setAddress("");
@@ -51,16 +61,16 @@ export function UpdateContact() {
 	return (
 		<div className="container">
 			<div>
-				<h1 className="text-center mt-5">Update a new contact</h1>
+				<h1 className="text-center mt-5">Editar un contacto ya existente</h1>
 				<form>
 					<div className="form-group">
-						<label>Full Name</label>
+						<label>Nombre Completo</label>
 						<input
 							type="text"
 							className="form-control"
 							placeholder="Full Name"
-							onChange={event => setFullName(event.target.value)}
-							value={fullName}
+							onChange={handleChangeName}
+							value={name}
 						/>
 					</div>
 					<div className="form-group">
@@ -69,38 +79,54 @@ export function UpdateContact() {
 							type="email"
 							className="form-control"
 							placeholder="Enter email"
-							onChange={event => NewEmail(event)}
+							// onChange={handleChangeData}
+							// value={data.email}
+							onChange={handleChangeEmail}
 							value={email}
 						/>
 					</div>
 					<div className="form-group">
-						<label>Phone</label>
+						<label>Teléfono</label>
 						<input
 							type="phone"
 							className="form-control"
 							placeholder="Enter phone"
-							onChange={event => setPhone(event.target.value)}
+							// onChange={handleChangeData}
+							// value={data.phone}
+							onChange={handleChangePhone}
 							value={phone}
 						/>
 					</div>
 					<div className="form-group">
-						<label>Address</label>
+						<label>Dirección</label>
 						<input
 							type="text"
 							className="form-control"
 							placeholder="Enter address"
-							onChange={event => setAddress(event.target.value)}
+							// onChange={handleChangeData}
+							// value={data.address}
+							onChange={handleChangeAddress}
 							value={address}
 						/>
 					</div>
-					<button type="button" className="btn btn-primary form-control" onClick={SaveContact}>
-						save
-					</button>
+					<Link to="/">
+						<button
+							type="button"
+							className="btn btn-primary form-control"
+							onClick={handleSaveContact}
+							// onClick={() => {
+							// 	actions.createContact(data);
+							// 	// console.log("data desde onclick", data);
+							// }}
+						>
+							Guardar
+						</button>
+					</Link>
 					<Link className="mt-3 w-100 text-center" to="/">
-						or get back to contacts
+						Vuelve a tus contactos
 					</Link>
 				</form>
 			</div>
 		</div>
 	);
-}
+};
