@@ -1,19 +1,22 @@
 import React, { useState, useEffect, useContext } from "react";
 import { withRouter } from "react-router-dom";
 import PropTypes from "prop-types";
+
 import { Context } from "../store/appContext.js";
 
 export const Modal = props => {
 	const [state, setState] = useState({
 		//initialize state here
 	});
-	const { actions, store } = useContext(Context);
+
+	const { store, actions } = useContext(Context);
+
 	return (
 		<div className="modal" tabIndex="-1" role="dialog" style={{ display: props.show ? "inline-block" : "none" }}>
 			<div className="modal-dialog" role="document">
 				<div className="modal-content">
 					<div className="modal-header">
-						<h5 className="modal-title">Estás a punto de eliminar un contacto.</h5>
+						<h5 className="modal-title">Are you sure?</h5>
 						{props.onClose ? (
 							<button
 								onClick={() => props.onClose()}
@@ -28,26 +31,22 @@ export const Modal = props => {
 						)}
 					</div>
 					<div className="modal-body">
-						<p> Estás seguro? </p>
+						<p>You are about to delete the contact {props.contactName}</p>
+						<p>Warning: unknown consequences after this point... Kidding!</p>
 					</div>
 					<div className="modal-footer">
-						{props.onClose ? (
-							<button onClick={() => props.onClose()} type="button" className="btn btn-primary">
-								<span aria-hidden="true">Oh no!</span>
-							</button>
-						) : (
-							""
-						)}
+						<button type="button" className="btn btn-primary" onClick={() => props.onClose()}>
+							Oh no!
+						</button>
 						<button
 							type="button"
 							className="btn btn-secondary"
 							data-dismiss="modal"
-							onClick={() => {
-								actions.deleteContact(props.data.id);
+							onClick={event => {
+								actions.deleteContact(props.contactId);
 								props.onClose();
 							}}>
-							{/* como añadir tb props.onClose()??? */}
-							Hazlo!
+							Do it!
 						</button>
 					</div>
 				</div>
@@ -63,7 +62,8 @@ Modal.propTypes = {
 	history: PropTypes.object,
 	onClose: PropTypes.func,
 	show: PropTypes.bool,
-	data: PropTypes.object
+	contactId: PropTypes.string,
+	contactName: PropTypes.string
 };
 
 /**

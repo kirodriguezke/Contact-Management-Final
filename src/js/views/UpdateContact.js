@@ -1,58 +1,49 @@
-import React, { useContext, useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import React, { useState, useEffect, useContext } from "react";
+import { useParams } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 import { Context } from "../store/appContext.js";
 
-export const UpdateContact = () => {
-	const { actions, store } = useContext(Context);
+export function UpdateContact() {
 	const params = useParams();
 
-	//DEFINO CADA CLAVE COMO VARIABLE CON ESTADO
+	const { store, actions } = useContext(Context);
 
-	const [name, setName] = useState("");
+	const [fullName, setFullName] = useState("");
 	const [phone, setPhone] = useState("");
 	const [email, setEmail] = useState("");
 	const [address, setAddress] = useState("");
 
 	useEffect(() => {
-		if (params.id) {
-			// PARA MEZCLAR EL UPDATECONTACT.JS CON EL ADDCONTACT.JS
-			actions.getContact(params.id);
-		}
-		console.log("store.user.id: ", store.user.id);
-		console.log("params desde Update: ", params);
+		actions.getContact(params.id);
 	}, []);
 
 	useEffect(() => {
-		if (params.id == store.user.id) {
-			setName(store.user.full_name);
-			setPhone(store.user.phone);
-			setEmail(store.user.email);
-			setAddress(store.user.address);
-		}
-	}, [store.user]);
+		setFullName(store.contacto.full_name);
+		setPhone(store.contacto.phone);
+		setEmail(store.contacto.email);
+		setAddress(store.contacto.address);
+	}, [store.contacto]);
 
-	//ONCHANGE CON CADA IMPUT PARA SETEAR VALOR CON SETX()
+	function NewEmail(event) {
+		setEmail(event.target.value);
+	}
 
-	const handleChangeName = event => setName(event.target.value);
-	const handleChangePhone = event => setPhone(event.target.value);
-	const handleChangeEmail = event => setEmail(event.target.value);
-	const handleChangeAddress = event => setAddress(event.target.value);
-
-	// CONSTRUYO UN HANDLE PARA GUARDAR CONTACTO al escribir LOS IMPUT
-	const handleSaveContact = event => {
+	const UpdateContact = e => {
 		const newContact = {
-			full_name: name,
-			address: address,
+			full_name: fullName,
 			phone: phone,
 			email: email,
-			agenda_slug: store.agenda_slug
+			address: address,
+			agenda_slug: store.usuario
 		};
+
+		// console.log("update contact", newContact);
 
 		actions.updateContact(params.id, newContact); // SE USA PARAMS PARA INDICAR EL CONTACTO QUE ESTAMOS MODIFICANDO
 
-		alert("Tu contacto " + name + " ha sido editado");
-		setName("");
+		alert("Contact successfully updated");
+		setFullName("");
 		setPhone("");
 		setEmail("");
 		setAddress("");
@@ -61,16 +52,16 @@ export const UpdateContact = () => {
 	return (
 		<div className="container">
 			<div>
-				<h1 className="text-center mt-5">Editar un contacto ya existente</h1>
+				<h1 className="text-center mt-5">Update a new contact</h1>
 				<form>
 					<div className="form-group">
-						<label>Nombre Completo</label>
+						<label>Full Name</label>
 						<input
 							type="text"
 							className="form-control"
 							placeholder="Full Name"
-							onChange={handleChangeName}
-							value={name}
+							onChange={event => setFullName(event.target.value)}
+							value={fullName}
 						/>
 					</div>
 					<div className="form-group">
@@ -79,54 +70,40 @@ export const UpdateContact = () => {
 							type="email"
 							className="form-control"
 							placeholder="Enter email"
-							// onChange={handleChangeData}
-							// value={data.email}
-							onChange={handleChangeEmail}
+							onChange={event => NewEmail(event)}
 							value={email}
 						/>
 					</div>
 					<div className="form-group">
-						<label>Teléfono</label>
+						<label>Phone</label>
 						<input
 							type="phone"
 							className="form-control"
 							placeholder="Enter phone"
-							// onChange={handleChangeData}
-							// value={data.phone}
-							onChange={handleChangePhone}
+							onChange={event => setPhone(event.target.value)}
 							value={phone}
 						/>
 					</div>
 					<div className="form-group">
-						<label>Dirección</label>
+						<label>Address</label>
 						<input
 							type="text"
 							className="form-control"
 							placeholder="Enter address"
-							// onChange={handleChangeData}
-							// value={data.address}
-							onChange={handleChangeAddress}
+							onChange={event => setAddress(event.target.value)}
 							value={address}
 						/>
 					</div>
 					<Link to="/">
-						<button
-							type="button"
-							className="btn btn-primary form-control"
-							onClick={handleSaveContact}
-							// onClick={() => {
-							// 	actions.createContact(data);
-							// 	// console.log("data desde onclick", data);
-							// }}
-						>
-							Guardar
+						<button type="button" className="btn btn-primary form-control" onClick={UpdateContact}>
+							Update
 						</button>
 					</Link>
 					<Link className="mt-3 w-100 text-center" to="/">
-						Vuelve a tus contactos
+						Get Back To Contacts
 					</Link>
 				</form>
 			</div>
 		</div>
 	);
-};
+}
